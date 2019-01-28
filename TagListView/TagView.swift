@@ -87,6 +87,12 @@ open class TagView: UIButton {
         }
     }
     
+    @IBInspectable open var removeButtonPaddingX: CGFloat = 0 {
+        didSet {
+            updateRightInsets()
+        }
+    }
+    
     private func reloadStyles() {
         if isHighlighted {
             if let highlightedBackgroundColor = highlightedBackgroundColor {
@@ -192,14 +198,15 @@ open class TagView: UIButton {
             size.width = size.height
         }
         if enableRemoveButton {
-            size.width += removeButtonIconSize + paddingX
+            size.width += removeButtonIconSize + (removeButtonPaddingX > 0 ? removeButtonPaddingX : paddingX)
         }
         return size
     }
     
     private func updateRightInsets() {
         if enableRemoveButton {
-            titleEdgeInsets.right = paddingX  + removeButtonIconSize + paddingX
+            removeButton.contentMode = .left
+            titleEdgeInsets.right = (removeButtonPaddingX > 0 ? removeButtonPaddingX : paddingX)  + removeButtonIconSize + paddingX
         }
         else {
             titleEdgeInsets.right = paddingX
@@ -209,8 +216,13 @@ open class TagView: UIButton {
     open override func layoutSubviews() {
         super.layoutSubviews()
         if enableRemoveButton {
-            removeButton.frame.size.width = paddingX + removeButtonIconSize + paddingX
-            removeButton.frame.origin.x = self.frame.width - removeButton.frame.width
+            if let titleLabel = titleLabel, removeButtonPaddingX > 0 {
+                removeButton.frame.size.width = removeButtonIconSize
+                removeButton.frame.origin.x = titleLabel.frame.maxX + removeButtonPaddingX
+            } else {
+                removeButton.frame.size.width = paddingX + removeButtonIconSize + paddingX
+                removeButton.frame.origin.x = self.frame.width - removeButton.frame.width
+            }
             removeButton.frame.size.height = self.frame.height
             removeButton.frame.origin.y = 0
         }

@@ -121,6 +121,14 @@ open class TagListView: UIView {
             rearrangeViews()
         }
     }
+    @IBInspectable open dynamic var removeButtonPaddingX: CGFloat = 0 {
+        didSet {
+            defer { rearrangeViews() }
+            tagViews.forEach {
+                $0.removeButtonPaddingX = removeButtonPaddingX
+            }
+        }
+    }
     
     @objc public enum Alignment: Int {
         case left
@@ -312,6 +320,7 @@ open class TagListView: UIView {
         tagView.removeButtonIconSize = removeButtonIconSize
         tagView.enableRemoveButton = enableRemoveButton
         tagView.removeIconLineColor = removeIconLineColor
+        tagView.removeButtonPaddingX = removeButtonPaddingX
         tagView.addTarget(self, action: #selector(tagPressed(_:)), for: .touchUpInside)
         tagView.removeButton.addTarget(self, action: #selector(removeButtonPressed(_:)), for: .touchUpInside)
         
